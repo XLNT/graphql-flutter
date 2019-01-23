@@ -78,10 +78,8 @@ class NormalizedInMemoryCache extends InMemoryCache {
 }
 
 String typenameDataIdFromObject(Object object) {
-  if (object is Map<String, Object> &&
-      object.containsKey('__typename') &&
-      object.containsKey('id')) {
-    return "${object['__typename']}/${object['id']}";
+  if (object is Map<String, Object> && object.containsKey('__typename') && object.containsKey('id')) {
+    return "${object['__typename']}:${object['id']}";
   }
 
   return null;

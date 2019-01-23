@@ -1,14 +1,13 @@
-abstract class Cache {
-  dynamic read(String key) {}
+import 'dart:async';
 
-  void write(
+abstract class Cache {
+  FutureOr<dynamic> read(String key);
+  FutureOr<void> write(
     String key,
     dynamic value,
-  ) {}
+  );
 
-  void save() {}
-
-  void restore() {}
-
-  void reset() {}
+  FutureOr<void> save();
+  FutureOr<void> restore();
+  FutureOr<void> reset();
 }

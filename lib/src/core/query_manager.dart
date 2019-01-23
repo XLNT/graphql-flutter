@@ -10,6 +10,7 @@ import 'package:graphql_flutter/src/core/observable_query.dart';
 import 'package:graphql_flutter/src/scheduler/scheduler.dart';
 
 import 'package:graphql_flutter/src/link/link.dart';
+import 'package:graphql_flutter/src/link/link_error.dart';
 import 'package:graphql_flutter/src/link/operation.dart';
 import 'package:graphql_flutter/src/link/fetch_result.dart';
 
@@ -85,7 +86,7 @@ class QueryManager {
       if (options.fetchPolicy == FetchPolicy.cacheFirst ||
           options.fetchPolicy == FetchPolicy.cacheAndNetwork ||
           options.fetchPolicy == FetchPolicy.cacheOnly) {
-        final dynamic cachedData = cache.read(operation.toKey());
+        final dynamic cachedData = await cache.read(operation.toKey());
 
         if (cachedData != null) {
           fetchResult = FetchResult(
@@ -119,9 +120,8 @@ class QueryManager {
       ).first;
 
       // save the data from fetchResult to the cache
-      if (fetchResult.data != null &&
-          options.fetchPolicy != FetchPolicy.noCache) {
-        cache.write(
+      if (fetchResult.data != null && options.fetchPolicy != FetchPolicy.noCache) {
+        await cache.write(
           operation.toKey(),
           fetchResult.data,
         );
@@ -137,12 +137,28 @@ class QueryManager {
       }
 
       queryResult = _mapFetchResultToQueryResult(fetchResult);
+
+      if (queryResult.errors != null && queryResult.errors.isNotEmpty) {
+        if (options.errorPolicy == ErrorPolicy.none) {
+          throw GraphQLErrorSet(queryResult.errors);
+        }
+      }
     } catch (error) {
       // TODO some dart errors break this
+      if (error is LinkError) {
+        rethrow;
+      }
+
+      if (options.errorPolicy == ErrorPolicy.none) {
+        // treat the error as runtime failure
+        rethrow;
+      }
+
       final GraphQLError graphQLError = GraphQLError(
         message: error.message,
       );
 
+      // otherwise, for ErrorPolicy.ignore and ErrorPolicy.all, just add it to the query result
       if (queryResult != null) {
         queryResult.addError(graphQLError);
       } else {

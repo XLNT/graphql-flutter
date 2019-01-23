@@ -57,3 +57,15 @@ class GraphQLError {
   String toString() =>
       '$message: ${locations is List ? locations.map((Location l) => '[${l.toString()}]').join('') : "Undefined location"}';
 }
+
+class GraphQLErrorSet extends Error {
+  List<GraphQLError> errors;
+
+  factory GraphQLErrorSet(List<GraphQLError> errors) => GraphQLErrorSet._(errors);
+
+  GraphQLErrorSet._(this.errors);
+
+  @override
+  String toString() =>
+      'GraphQLErrorSet (${errors.length}): ${errors.map((GraphQLError err) => err.toString()).join('\n')}';
+}

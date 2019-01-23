@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 
 import 'package:graphql_flutter/src/link/link.dart';
+import 'package:graphql_flutter/src/link/link_error.dart';
 import 'package:graphql_flutter/src/link/operation.dart';
 import 'package:graphql_flutter/src/link/fetch_result.dart';
 import 'package:graphql_flutter/src/link/http/http_config.dart';
@@ -50,8 +51,7 @@ class HttpLink extends Link {
               );
             }
 
-            final HttpOptionsAndBody httpOptionsAndBody =
-                _selectHttpOptionsAndBody(
+            final HttpOptionsAndBody httpOptionsAndBody = _selectHttpOptionsAndBody(
               operation,
               fallbackHttpConfig,
               linkConfig,
@@ -82,7 +82,7 @@ class HttpLink extends Link {
 
                 controller.add(parsedResponse);
               } catch (error) {
-                controller.addError(error);
+                controller.addError(LinkError(error));
               }
 
               await controller.close();
@@ -221,8 +221,7 @@ FetchResult _parseResponse(Response response) {
 /// The default fallback encoding is set to UTF-8 according to the IETF RFC4627 standard
 /// which specifies the application/json media type:
 ///   "JSON text SHALL be encoded in Unicode. The default encoding is UTF-8."
-Encoding _determineEncodingFromResponse(Response response,
-    [Encoding fallback = utf8]) {
+Encoding _determineEncodingFromResponse(Response response, [Encoding fallback = utf8]) {
   final String contentType = response.headers['content-type'];
 
   if (contentType == null) {

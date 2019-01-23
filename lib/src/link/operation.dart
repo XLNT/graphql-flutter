@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart' as crypto;
 
 class Operation {
   Operation({
@@ -32,6 +34,12 @@ class Operation {
     /// that might not always be true
     final String encodedVariables = json.encode(variables);
 
-    return '$document|$encodedVariables|$operationName';
+    return hex.encode(
+      crypto.md5
+          .convert(
+            utf8.encode('$document|$encodedVariables|$operationName'),
+          )
+          .bytes,
+    );
   }
 }

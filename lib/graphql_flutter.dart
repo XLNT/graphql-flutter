@@ -12,6 +12,7 @@ export 'package:graphql_flutter/src/link/link.dart';
 export 'package:graphql_flutter/src/link/link_error.dart';
 export 'package:graphql_flutter/src/link/http/link_http.dart';
 export 'package:graphql_flutter/src/link/auth/link_auth.dart';
+export 'package:graphql_flutter/src/link/operation.dart';
 
 export 'package:graphql_flutter/src/cache/cache.dart';
 export 'package:graphql_flutter/src/cache/in_memory.dart';

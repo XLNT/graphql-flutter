@@ -81,8 +81,8 @@ class HttpLink extends Link {
                 final FetchResult parsedResponse = _parseResponse(response);
 
                 controller.add(parsedResponse);
-              } catch (error) {
-                controller.addError(LinkError(error));
+              } catch (error, stackTrace) {
+                controller.addError(LinkError(error), stackTrace);
               }
 
               await controller.close();
